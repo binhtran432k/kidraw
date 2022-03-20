@@ -23,6 +23,6 @@ public class Level {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer levelId;
     
-    @Column(name = "LevelName", nullable = false)
+    @Column(name = "LevelName", nullable = false, unique = true)
     private String levelName; 
 }

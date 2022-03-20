@@ -23,6 +23,6 @@ public class TypeArt {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer typeId;
     
-    @Column(name = "TypeName", nullable = false)
+    @Column(name = "TypeName", nullable = false, unique = true)
     private String typeName; 
 }

@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LevelRepository extends JpaRepository<Level, Integer> {
-    Optional<Level> findById(Integer id);
+    Optional<Level> findByLevelId(Integer id);
+    Optional<Level> findByLevelName(String name);
 }

@@ -22,7 +22,7 @@ public class ClassArt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer classArtId;
-    @Column(name = "ClassArtName", nullable = false)
+    @Column(name = "ClassArtName", nullable = false, unique = true)
     private String classArtName; 
     @Column(name = "NumOfStudent", nullable = false)
     private Integer numOfStudent;

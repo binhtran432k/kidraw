@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TypeArtRepository extends JpaRepository <TypeArt, Integer> {
     Optional<TypeArt> findById(Integer id);
+    Optional<TypeArt> findByTypeName(String name);
 }
