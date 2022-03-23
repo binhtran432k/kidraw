@@ -1,8 +1,16 @@
-server:
-  port: ${SERVER_PORT:8080}
 spring:
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
+  datasource:
+    url: jdbc:postgres://ec2-3-229-161-70.compute-1.amazonaws.com:5432/dfubf5uh0u8h2i
+    username: spbdoduchqxyra
+    password: d0f1837b4d979af8bcf390a59de165d87cbb59334390e8521c6a48ccb2697476
+  sql:
+    init:
+      mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 jwt:
   header: Authorization
   token:
@@ -12,47 +20,8 @@ jwt:
   authorities_key: roles
   secret: 8d0430fbb7e52620bca66c47cb80c1a9b844e629195010f4c27643528ea021838812c9f6669f979fe7431ea210014737ca08a05e568d82eefecaab5624d163b9
 
----
-
-spring:
-  config:
-    activate:
-      on-profile: local
-  datasource:
-    url: "jdbc:postgresql://localhost:5432/kidspainting"
-    username: admin
-    password: admin
-  sql:
-    init:
-      mode: always
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL81Dialect
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: heroku
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-  sql:
-    init:
-      mode: always
-  jpa:
-    database-platform: ${SPRING_JPA_DATABASE_PLATFORM}
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    # properties:
-    #   hibernate:
-    #     "[format_sql]": true
-    #     "[globally_quoted_identifiers]": true
-    #     dialect: org.hibernate.dialect.PostgreSQL81Dialect
+# SPRING_PROFILES_ACTIVE=heroku
+# SPRING_DATASOURCE_URL=jdbc:postgres://ec2-3-229-161-70.compute-1.amazonaws.com:5432/dfubf5uh0u8h2i
+# SPRING_DATASOURCE_USERNAME=spbdoduchqxyra
+# SPRING_DATASOURCE_PASSWORD=d0f1837b4d979af8bcf390a59de165d87cbb59334390e8521c6a48ccb2697476
+# SPRING_JPA_DATABASE_PATFORM=org.hibernate.dialect.PostgreSQLDialect
