@@ -15,6 +15,18 @@ Content-Type: application/json
 
 ###
 
+# @name login_failed_admin
+POST {{rest}}/auth
+Content-Type: application/json
+# Accept-Language: vi
+
+{
+    "username": "admin",
+    "password": "failed"
+}
+
+###
+
 # @name get_all_user
 GET {{rest}}/user
 Authorization: Bearer {{admin_access_token}}

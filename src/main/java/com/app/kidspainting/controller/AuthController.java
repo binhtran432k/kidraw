@@ -1,12 +1,12 @@
 package com.app.kidspainting.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.app.kidspainting.dto.AuthRequest;
 import com.app.kidspainting.dto.AuthResponse;
 import com.app.kidspainting.dto.RefreshTokenRequest;
 import com.app.kidspainting.exception.JWTValidationException;
+import com.app.kidspainting.exception.EntityNotFoundException;
 import com.app.kidspainting.util.AuthUtil;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,8 +42,7 @@ public class AuthController {
             User user = (User) authManager.authenticate(authInputToken).getPrincipal();
 
             String username = user.getUsername();
-            List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+            List<String> roles = authUtil.parseRoleNamesFromAuthorities(user.getAuthorities());
 
             // Initialize access, refresh token
             String accessToken = authUtil.generateAccessToken(username, roles);
@@ -56,7 +54,7 @@ public class AuthController {
                     .build();
             return ResponseEntity.ok().body(authResponse);
         } catch (AuthenticationException authExc) {
-            throw new RuntimeException("Invalid Login Credentials");
+            throw new EntityNotFoundException();
         }
     }
 
