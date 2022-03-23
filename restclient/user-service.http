@@ -1,0 +1,57 @@
+@rest = {{$dotenv HOST}}/{{$dotenv API}}
+
+### ADMIN ACTION ###
+
+# @name login_admin
+@admin_access_token = {{login_admin.response.body.accessToken}}
+@admin_refresh_token = {{login_admin.response.body.refreshToken}}
+POST {{rest}}/auth
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "12345678aA@"
+}
+
+###
+
+# @name get_all_user
+GET {{rest}}/user
+Authorization: Bearer {{admin_access_token}}
+
+###
+
+# @name refresh_token_admin
+@admin_access_token_after = {{refresh_token_admin.response.body.accessToken}}
+POST  {{rest}}/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "{{admin_refresh_token}}"
+}
+
+###
+
+# @name get_all_user_after_refresh
+GET {{rest}}/user
+Authorization: Bearer {{admin_access_token_after}}
+
+### STUDENT ACTION ###
+
+# @name login_student
+@student_access_token = {{login_student.response.body.accessToken}}
+POST {{rest}}/auth
+Content-Type: application/json
+
+{
+    "username": "student",
+    "password": "12345678aA@"
+}
+
+###
+
+# @name get_all_user_by_student
+GET {{rest}}/user
+Authorization: Bearer {{student_access_token}}
+
+###
