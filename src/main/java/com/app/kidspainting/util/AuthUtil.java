@@ -30,17 +30,25 @@ import java.util.stream.Collectors;
 public class AuthUtil {
     private final MessageSource messageSource;
 
-    @Value("${jwt_secret}")
+    @Value("${jwt.secret}")
     private String secret;
-    private long accessTokenDuration = 600000;
-    private long refreshTokenDuration = 3600000;
+    @Value("${jwt.header}")
+    private String authHeader;
+    @Value("${jwt.token.prefix}")
+    private String tokenPrefix;
+    @Value("${jwt.authorities_key}")
+    private String authKey;
+    @Value("${jwt.token.access_validity}")
+    private long accessTokenDuration;
+    @Value("${jwt.token.refresh_validity}")
+    private long refreshTokenDuration;
 
     public String generateAccessToken(String username, List<String> roles)
             throws IllegalArgumentException, JWTCreationException {
         return JWT.create()
                 .withSubject("User Details")
                 .withClaim("username", username)
-                .withClaim("roles", roles)
+                .withClaim(authKey, roles)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenDuration))
                 .withIssuedAt(new Date())
                 .withIssuer("kidspainting/backdend/kidspainting")
@@ -66,8 +74,8 @@ public class AuthUtil {
     }
 
     public Optional<String> getJwtFromBearer(String authHeader) {
-        if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
+        if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith(tokenPrefix)) {
+            String jwt = authHeader.substring(tokenPrefix.length());
             if (jwt == null || jwt.isBlank()) {
                 messageSource.getMessage("exception.jwt.bearer_invalid", null, LocaleContextHolder.getLocale());
                 return Optional.empty();
@@ -84,7 +92,7 @@ public class AuthUtil {
         DecodedJWT decodedJWT = validateTokenAndRetrieveDecoded(jwt);
         // Get authorization info
         String username = decodedJWT.getSubject();
-        String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+        String[] roles = decodedJWT.getClaim(authKey).asArray(String.class);
 
         Collection<SimpleGrantedAuthority> authorities = parseAuthoritiesFromRoleNames(roles);
         return new UsernamePasswordAuthenticationToken(username, "", authorities);
