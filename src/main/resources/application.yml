@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgres://ec2-3-229-161-70.compute-1.amazonaws.com:5432/dfubf5uh0u8h2i?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory
+    url: jdbc:postgresql://ec2-3-229-161-70.compute-1.amazonaws.com:5432/dfubf5uh0u8h2i
     username: spbdoduchqxyra
     password: d0f1837b4d979af8bcf390a59de165d87cbb59334390e8521c6a48ccb2697476
   sql:
@@ -11,6 +11,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        "[format_sql]": true
+        "[globally_quoted_identifiers]": true
+        dialect: org.hibernate.dialect.PostgreSQL81Dialect
 jwt:
   header: Authorization
   token:
