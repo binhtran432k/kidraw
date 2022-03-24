@@ -1,16 +1,16 @@
 @rest = {{$dotenv HOST}}/{{$dotenv API}}
 
-### ADMIN ACTION ###
+# (( ADMIN ACTION ))
 
 # @name login_admin
-@admin_access_token = {{login_admin.accessToken}}
-@admin_refresh_token = {{login_admin.refreshToken}}
+@admin_access_token = {{login_admin.response.body.accessToken}}
+@admin_refresh_token = {{login_admin.response.body.refreshToken}}
 POST {{rest}}/auth
 Origin: http://test.com
 Content-Type: application/json
 
 {
-    "username": "admin",
+    "username": "admin@email.com",
     "password": "12345678aA@"
 }
 
@@ -30,6 +30,17 @@ Accept-Language: vi
 
 # @name get_all_user
 GET {{rest}}/user
+    ?page=2
+    &size=2
+Authorization: Bearer {{admin_access_token}}
+
+###
+
+# @name get_all_admin
+GET {{rest}}/user
+    ?page=0
+    &size=1
+    &role=ROLE_STUDENT
 Authorization: Bearer {{admin_access_token}}
 
 ###
@@ -49,10 +60,12 @@ Content-Type: application/json
 GET {{rest}}/user
 Authorization: Bearer {{admin_access_token_after}}
 
-### STUDENT ACTION ###
+###
+
+# (( STUDENT ACTION ))
 
 # @name login_student
-@student_access_token = {{login_student.accessToken}}
+@student_access_token = {{login_student.response.body.accessToken}}
 POST {{rest}}/auth
 Content-Type: application/json
 

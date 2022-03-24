@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.app.kidspainting.dto.CreateUserRequest;
 import com.app.kidspainting.dto.GetUserInfoResponse;
 import com.app.kidspainting.dto.GetUserResponse;
+import com.app.kidspainting.dto.PageResponse;
 import com.app.kidspainting.dto.UpdateUserRequest;
 import com.app.kidspainting.dto.UpdateUserRequestByAdmin;
 import com.app.kidspainting.entity.Role;
@@ -18,7 +19,9 @@ import com.app.kidspainting.repository.RoleRepository;
 import com.app.kidspainting.repository.UserRepository;
 import com.app.kidspainting.service.UserService;
 import com.app.kidspainting.util.AuthUtil;
+import com.app.kidspainting.util.PageUtil;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,26 +42,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthUtil authUtil;
+    private final PageUtil pageUtil;
 
     @Override
-    public List<GetUserResponse> getAll() {
-        List<GetUserResponse> allUserResponses = new ArrayList<>();
-        userRepository.findAll().forEach(user -> {
-            GetUserResponse userResponse = GetUserResponse.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .email(user.getEmail())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .dateOfBirth(user.getDateOfBirth())
-                    .sex(user.getSex())
-                    .phone(user.getPhone())
-                    .address(user.getAddress())
-                    .createTime(user.getCreateTime())
-                    .build();
-            allUserResponses.add(userResponse);
-        });
-        return allUserResponses;
+    public PageResponse<List<GetUserResponse>> getAll(int page, int size, String[] sort) {
+        Page<User> pageUsers = userRepository.findAll(pageUtil.generatePageable(page, size, sort));
+        return parseResponseFromPageUsers(pageUsers);
+    }
+
+    @Override
+    public PageResponse<List<GetUserResponse>> getAllWithRoleName(
+            String roleName, int page, int size, String[] sort) {
+        Page<User> pageUsers = userRepository.findByRoles_Name(roleName,
+                pageUtil.generatePageable(page, size, sort));
+        return parseResponseFromPageUsers(pageUsers);
     }
 
     @Override
@@ -226,7 +223,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void removeById(Long id) {
-        Optional<User> userOpt = userRepository.findById(id);
         userRepository.deleteById(id);
     }
 
@@ -241,5 +237,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Collection<SimpleGrantedAuthority> authorities = authUtil.parseAuthoritiesFromRoles(user.getRoles());
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
                 authorities);
+    }
+
+    private PageResponse<List<GetUserResponse>> parseResponseFromPageUsers(Page<User> pageUsers) {
+        List<GetUserResponse> allUserResponses = new ArrayList<>();
+        pageUsers.getContent().forEach(user -> {
+            GetUserResponse userResponse = GetUserResponse.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .dateOfBirth(user.getDateOfBirth())
+                    .sex(user.getSex())
+                    .phone(user.getPhone())
+                    .address(user.getAddress())
+                    .createTime(user.getCreateTime())
+                    .build();
+            allUserResponses.add(userResponse);
+        });
+
+        return PageResponse.<List<GetUserResponse>>builder()
+                .items(allUserResponses)
+                .index(pageUsers.getNumber())
+                .totalItems(pageUsers.getTotalElements())
+                .totalPage(pageUsers.getTotalPages())
+                .build();
     }
 }

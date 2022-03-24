@@ -5,7 +5,9 @@ import java.util.Locale;
 import com.app.kidspainting.exception.CustomGlobalException;
 
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -22,6 +24,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(ErrorResponse.builder().code(e.getCode())
+                        .message(messageSource.getMessage(e.getMessage(), null, locale)).build());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(AccessDeniedException e, Locale locale) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.builder().code(GlobalErrorCode.ERROR_UNAUTHORIZED)
                         .message(messageSource.getMessage(e.getMessage(), null, locale)).build());
     }
 
