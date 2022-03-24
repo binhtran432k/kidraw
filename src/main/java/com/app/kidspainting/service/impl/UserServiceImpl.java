@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final AuthUtil authUtil;
 
     @Override
-    public List<GetUserResponse> getAllUsers() {
+    public List<GetUserResponse> getAll() {
         List<GetUserResponse> allUserResponses = new ArrayList<>();
         userRepository.findAll().forEach(user -> {
             GetUserResponse userResponse = GetUserResponse.builder()
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public GetUserInfoResponse getUserInfoByUsername(String username) {
+    public GetUserInfoResponse getInfoByUsername(String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         User user = userOpt.orElseThrow(() -> {
             throw new EntityNotFoundException("exception.user.not_found");
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public GetUserInfoResponse getUserInfoById(Long id) {
+    public GetUserInfoResponse getInfoById(Long id) {
         Optional<User> userOpt = userRepository.findById(id);
         User user = userOpt.orElseThrow(() -> {
             throw new EntityNotFoundException("exception.user.not_found");
@@ -98,16 +98,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public GetUserInfoResponse getUserInfo() {
+    public GetUserInfoResponse getInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (String) authentication.getPrincipal();
 
-        GetUserInfoResponse getUserInfoResponse = getUserInfoByUsername(username);
+        GetUserInfoResponse getUserInfoResponse = getInfoByUsername(username);
         return getUserInfoResponse;
     }
 
     @Override
-    public Long createUser(CreateUserRequest createUserRequest) {
+    public Long create(CreateUserRequest createUserRequest) {
         String encodedPassword = passwordEncoder.encode(createUserRequest.getPassword());
 
         if (userRepository.existsByUsername(createUserRequest.getUsername())) {
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         createUserRequest.getRoleNames().forEach(roleName -> {
             roleRepository.findByName(roleName).<Runnable>map(role -> () -> validRoles.add(role))
                     .orElseThrow(() -> {
-                        throw new EntityNotFoundException(String.format("exception.role.invalid", roleName));
+                        throw new EntityNotFoundException("exception.role.invalid");
                     })
                     .run();
         });
@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateUserInfo(UpdateUserRequest updateUserRequest) {
+    public void update(UpdateUserRequest updateUserRequest) {
         // Get username from authentication
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (String) authentication.getPrincipal();
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateUserInfoByAdmin(Long userId, UpdateUserRequestByAdmin updateUserRequestByAdmin) {
+    public void updateByAdmin(Long userId, UpdateUserRequestByAdmin updateUserRequestByAdmin) {
         Optional<User> userOpt = userRepository.findById(userId);
         User user = userOpt.orElseThrow(() -> {
             throw new EntityNotFoundException("exception.user.not_found");
@@ -222,6 +222,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         userRepository.save(user);
+    }
+
+    @Override
+    public void removeById(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        userRepository.deleteById(id);
     }
 
     @Override

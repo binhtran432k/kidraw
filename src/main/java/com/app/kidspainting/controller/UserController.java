@@ -33,26 +33,26 @@ public class UserController {
 
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<GetUserResponse>> getAllUsers() {
-        return ResponseEntity.ok().body(userService.getAllUsers());
+    public ResponseEntity<List<GetUserResponse>> getAll() {
+        return ResponseEntity.ok().body(userService.getAll());
     }
 
     @CrossOrigin
     @GetMapping(value = "/{id}")
-    public ResponseEntity<GetUserInfoResponse> getUserInfoById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(userService.getUserInfoById(id));
+    public ResponseEntity<GetUserInfoResponse> getInfoById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(userService.getInfoById(id));
     }
 
     @CrossOrigin
     @GetMapping(value = "/info")
-    public ResponseEntity<GetUserInfoResponse> getUserInfo() {
-        return ResponseEntity.ok().body(userService.getUserInfo());
+    public ResponseEntity<GetUserInfoResponse> getInfo() {
+        return ResponseEntity.ok().body(userService.getInfo());
     }
 
     @CrossOrigin
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody CreateUserRequest createUserRequest) {
-        Long userId = userService.createUser(createUserRequest);
+    public ResponseEntity<String> create(@RequestBody CreateUserRequest createUserRequest) {
+        Long userId = userService.create(createUserRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}")
                 .buildAndExpand(userId).toUri();
         return ResponseEntity.created(location).build();
@@ -73,23 +73,24 @@ public class UserController {
     // }
 
     @CrossOrigin
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @CrossOrigin
     @PutMapping
-    public ResponseEntity<HttpStatus> updateUserInfo(@RequestBody UpdateUserRequest updateUserRequest) {
-        userService.updateUserInfo(updateUserRequest);
+    public ResponseEntity<HttpStatus> update(@RequestBody UpdateUserRequest updateUserRequest) {
+        userService.update(updateUserRequest);
         return ResponseEntity.ok().build();
     }
 
     @CrossOrigin
     @PutMapping(value = "/{id}")
-    public ResponseEntity<HttpStatus> updateUserInfoByAdmin(@PathVariable Long id,
+    public ResponseEntity<HttpStatus> updateByAdmin(@PathVariable Long id,
             @RequestBody UpdateUserRequestByAdmin updateUserRequestByAdmin) {
-        userService.updateUserInfoByAdmin(id, updateUserRequestByAdmin);
+        userService.updateByAdmin(id, updateUserRequestByAdmin);
         return ResponseEntity.ok().build();
+    }
+
+    @CrossOrigin
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
+        userService.removeById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

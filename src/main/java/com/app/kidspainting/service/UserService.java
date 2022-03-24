@@ -9,17 +9,19 @@ import com.app.kidspainting.dto.UpdateUserRequest;
 import com.app.kidspainting.dto.UpdateUserRequestByAdmin;
 
 public interface UserService {
-    List<GetUserResponse> getAllUsers();
+    List<GetUserResponse> getAll();
 
-    GetUserInfoResponse getUserInfoById(Long id);
+    GetUserInfoResponse getInfoById(Long id);
 
-    GetUserInfoResponse getUserInfoByUsername(String username);
+    GetUserInfoResponse getInfoByUsername(String username);
 
-    GetUserInfoResponse getUserInfo();
+    GetUserInfoResponse getInfo();
 
-    Long createUser(CreateUserRequest createUserRequest);
+    Long create(CreateUserRequest createUserRequest);
 
-    void updateUserInfo(UpdateUserRequest updateUserRequest);
+    void update(UpdateUserRequest updateUserRequest);
 
-    void updateUserInfoByAdmin(Long userId, UpdateUserRequestByAdmin updateUserRequestByAdmin);
+    void updateByAdmin(Long id, UpdateUserRequestByAdmin updateUserRequestByAdmin);
+
+    void removeById(Long id);
 }
