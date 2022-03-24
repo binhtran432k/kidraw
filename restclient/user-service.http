@@ -3,9 +3,10 @@
 ### ADMIN ACTION ###
 
 # @name login_admin
-@admin_access_token = {{login_admin.response.body.accessToken}}
-@admin_refresh_token = {{login_admin.response.body.refreshToken}}
+@admin_access_token = {{login_admin.accessToken}}
+@admin_refresh_token = {{login_admin.refreshToken}}
 POST {{rest}}/auth
+Origin: http://test.com
 Content-Type: application/json
 
 {
@@ -18,7 +19,7 @@ Content-Type: application/json
 # @name login_failed_admin
 POST {{rest}}/auth
 Content-Type: application/json
-# Accept-Language: vi
+Accept-Language: vi
 
 {
     "username": "admin",
@@ -51,7 +52,7 @@ Authorization: Bearer {{admin_access_token_after}}
 ### STUDENT ACTION ###
 
 # @name login_student
-@student_access_token = {{login_student.response.body.accessToken}}
+@student_access_token = {{login_student.accessToken}}
 POST {{rest}}/auth
 Content-Type: application/json
 
